@@ -4,6 +4,15 @@ tss
 # MPC parties vaults
 .test*/
 
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
