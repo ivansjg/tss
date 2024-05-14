@@ -86,7 +86,7 @@ money in 0x6Abc079738837FCa8F39FAb2b2189cc01A1bF3e0 .
 In this step, we are gonna send some money from our recently funded wallet (0x6Abc079738837FCa8F39FAb2b2189cc01A1bF3e0)
 to another address controlled by us (to not lose funds).
 
-For this, we will use the ethereum-tool available in -TODO-
+For this, we will use the ethereum-tool available in https://github.com/ivansjg/ethereum-tool
 ```
 createUnsignedRawEthereumTx PUBLIC_KEY_COMPRESSED DESTINATION_ETHEREUM_ADDRESS AMOUNT_IN_USD
 
