@@ -2,7 +2,7 @@ package client
 
 import (
 	"crypto/ecdsa"
-	"crypto/sha256"
+	"github.com/btcsuite/btcd/btcec"
 	"math/big"
 	"os"
 	"path"
@@ -11,12 +11,8 @@ import (
 	"github.com/bnb-chain/tss-lib/v2/crypto/paillier"
 	"github.com/bnb-chain/tss-lib/v2/ecdsa/keygen"
 	"github.com/bnb-chain/tss-lib/v2/tss"
-	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcutil/bech32"
-	"github.com/pkg/errors"
-	"golang.org/x/crypto/ripemd160"
-
 	"github.com/bnb-chain/tss/common"
+	ethreumCrypto "github.com/ethereum/go-ethereum/crypto"
 )
 
 func loadSavedKeyForSign(config *common.TssConfig, sortedIds tss.SortedPartyIDs, signers map[string]int) keygen.LocalPartySaveData {
@@ -121,19 +117,25 @@ func appendIfNotExist(target []string, new string) []string {
 
 func GetAddress(key ecdsa.PublicKey, prefix string) (string, error) {
 	btcecPubKey := btcec.PublicKey(key)
-	// be consistent with tendermint/crypto
 	compressed := btcecPubKey.SerializeCompressed()
-	hasherSHA256 := sha256.New()
-	hasherSHA256.Write(compressed[:]) // does not error
-	sha := hasherSHA256.Sum(nil)
+	Logger.Infof("public key compressed in hex: %x\n", compressed)
+	ethPublicKey := ethreumCrypto.PubkeyToAddress(key)
+	return ethPublicKey.String(), nil
+	/*
+		btcecPubKey := btcec.PublicKey(key)
+		// be consistent with tendermint/crypto
+		compressed := btcecPubKey.SerializeCompressed()
+		hasherSHA256 := sha256.New()
+		hasherSHA256.Write(compressed[:]) // does not error
+		sha := hasherSHA256.Sum(nil)
 
-	hasherRIPEMD160 := ripemd160.New()
-	hasherRIPEMD160.Write(sha) // does not error
+		hasherRIPEMD160 := ripemd160.New()
+		hasherRIPEMD160.Write(sha) // does not error
 
-	address := []byte(hasherRIPEMD160.Sum(nil))
-	converted, err := bech32.ConvertBits(address, 8, 5, true) // TODO: error check
-	if err != nil {
-		return "", errors.Wrap(err, "encoding bech32 failed")
-	}
-	return bech32.Encode(prefix, converted)
+		address := []byte(hasherRIPEMD160.Sum(nil))
+		converted, err := bech32.ConvertBits(address, 8, 5, true) // TODO: error check
+		if err != nil {
+			return "", errors.Wrap(err, "encoding bech32 failed")
+		}
+		return bech32.Encode(prefix, converted)*/
 }

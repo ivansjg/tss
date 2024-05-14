@@ -242,7 +242,7 @@ func NewTssClient(config *common.TssConfig, mode ClientMode, mock bool) *TssClie
 func (client *TssClient) Start() {
 	switch client.mode {
 	case SignMode:
-		message, ok := big.NewInt(0).SetString(client.config.Message, 10)
+		message, ok := big.NewInt(0).SetString(client.config.Message, 0)
 		if !ok {
 			common.Panic(fmt.Errorf("message to be sign: %s is not a valid big.Int", client.config.Message))
 		}

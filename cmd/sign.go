@@ -27,14 +27,8 @@ var signCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		setChannelId()
 		setChannelPasswd()
-		setMessage()
 
 		c := client.NewTssClient(&common.TssCfg, client.SignMode, false)
 		c.Start()
 	},
-}
-
-// TODO: use MessageBridge
-func setMessage() {
-	common.TssCfg.Message = "0"
 }
