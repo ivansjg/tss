@@ -2,6 +2,8 @@ package client
 
 import (
 	"crypto/ecdsa"
+	"crypto/elliptic"
+	"github.com/bnb-chain/tss-lib/v2/crypto/vss"
 	"github.com/btcsuite/btcd/btcec"
 	"math/big"
 	"os"
@@ -14,6 +16,36 @@ import (
 	"github.com/bnb-chain/tss/common"
 	ethreumCrypto "github.com/ethereum/go-ethereum/crypto"
 )
+
+func Reconstruct(threshold int, ec elliptic.Curve, shares []keygen.LocalPartySaveData) (*ecdsa.PrivateKey, error) {
+	var vssShares = make(vss.Shares, len(shares))
+	for i, share := range shares {
+		vssShare := &vss.Share{
+			Threshold: threshold,
+			ID:        share.ShareID,
+			Share:     share.Xi,
+		}
+		vssShares[i] = vssShare
+	}
+
+	d, err := vssShares.ReConstruct(ec)
+	if err != nil {
+		return nil, err
+	}
+
+	x, y := ec.ScalarBaseMult(d.Bytes())
+
+	privateKey := &ecdsa.PrivateKey{
+		D: d,
+		PublicKey: ecdsa.PublicKey{
+			Curve: ec,
+			X:     x,
+			Y:     y,
+		},
+	}
+
+	return privateKey, nil
+}
 
 func loadSavedKeyForSign(config *common.TssConfig, sortedIds tss.SortedPartyIDs, signers map[string]int) keygen.LocalPartySaveData {
 	result := loadSavedKey(config)
